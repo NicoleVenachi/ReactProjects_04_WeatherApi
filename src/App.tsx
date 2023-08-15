@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { optionType } from "./types"
 
 
@@ -8,13 +8,18 @@ const App: React.FC = (): JSX.Element => {
 
   const [options, setOptions] = useState<[]>([]) //state para sacar las optciones de lugares con el nombre de la ciudad
 
+  const [city, setCity] = useState<optionType | null>(null) //state para almacenar la city elegida
+
   const getSearchOptions = (value: string) => {
     //geolocationfetch
     // http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
     fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${value.trim()}&limit=5&appid=${process.env.REACT_APP_API_KEY}`)
       .then(res => res.json())
       .then(data => setOptions(data))
+
   }
+
+
 
   const onInputChage = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -27,10 +32,30 @@ const App: React.FC = (): JSX.Element => {
   }
 
   const onOptionSelect = (option: optionType) => {
-    console.log(option.name);
-
+    setCity(option)
   }
 
+  //submit, que haga fethc al weather forecast solo ald ar click al boton
+  const onSubmit = () => {
+    if (!city) return //sino hay icty, no hace nada
+
+    getForecast(city)
+  }
+
+  const getForecast = (city: optionType) => {
+    //fetch del weather
+    // https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&exclude={part}&appid={API key}
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metrics&appid=${process.env.REACT_APP_API_KEY}`)
+      .then(res => res.json())
+      .then(data => console.log({ data }))
+  }
+  useEffect(() => {
+
+    if (city) {
+      setTerm(city.name) //asi dejo esa city como value del input
+      setOptions([]) //asi limpio el ul
+    }
+  }, [city])
 
   return (
     <main className="flex justify-center items-center bg-gradient-to-br from-sky-400 via-rose-400 to-lime-400 h-[100vh] w-full">
@@ -51,13 +76,16 @@ const App: React.FC = (): JSX.Element => {
                   <button
                     className="text-left text-sm w-full hover:bg-zinc-700 hover:text-white px-2 py-1 cursor-pointer"
                     onClick={() => onOptionSelect(option)}
-                  >{option.name}</button>
+                  >{`${option.name} - ${option.country}`}</button>
                 </li>
               ))
             }
           </ul>
 
-          <button className="rounded-r-md border-2 border-zinc-100 hover:border-zinc-500 hover:text-zinc-500 text-zinc-100 px-2 py-1 cursor-pointer"> Search </button>
+          <button
+            className="rounded-r-md border-2 border-zinc-100 hover:border-zinc-500 hover:text-zinc-500 text-zinc-100 px-2 py-1 cursor-pointer"
+            onClick={onSubmit}
+          > Search </button>
         </div>
       </section>
     </main>

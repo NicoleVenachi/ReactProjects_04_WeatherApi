@@ -2,5 +2,6 @@
 export interface optionType { 
   name: string;
   lat: number;
-  lon: number
+  lon: number;
+  country: string;
 }
