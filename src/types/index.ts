@@ -9,7 +9,7 @@ export interface optionType {
 export interface forecastType {
   name: string,
   country: string;
-  suntise: number;
+  sunrise: number;
   sunset: number;
   list: [
     {

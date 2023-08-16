@@ -46,7 +46,14 @@ const useForecast = () => {
     // https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&exclude={part}&appid={API key}
     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${city.lat}&lon=${city.lon}&units=metrics&appid=${process.env.REACT_APP_API_KEY}`)
       .then(res => res.json())
-      .then(data => setForecast(data))
+      .then(data => {
+        
+        const forecastData = {
+          ...data.city,
+          list: data.list.slice(0,16),
+        } //saco predicción de solo unas horas, no días
+        setForecast(forecastData)
+      })
   }
   useEffect(() => {
 

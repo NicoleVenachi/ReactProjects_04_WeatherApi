@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { optionType } from "./types"
 import Search from "./components/Search"
 import useForecast from "./hooks/useForecast"
+import Forecast from "./components/Forecast"
 
 
 const App: React.FC = (): JSX.Element => {
@@ -21,7 +22,7 @@ const App: React.FC = (): JSX.Element => {
 
       {
         forecast ? (
-          <p> hay forecast</p>
+          <Forecast data={forecast} />
         ) : (
           <Search
             term={term}
