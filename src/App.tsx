@@ -21,7 +21,7 @@ const App: React.FC = (): JSX.Element => {
 
       {
         forecast ? (
-          <p>hay forecast</p>
+          <p> hay forecast</p>
         ) : (
           <Search
             term={term}
