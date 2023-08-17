@@ -1,3 +1,4 @@
+// helpers functions para mostar bien aspero la data
 export const getWindDirection = (deg: number): string => {
   if (deg > 15 && deg <= 75) return 'NE'
 

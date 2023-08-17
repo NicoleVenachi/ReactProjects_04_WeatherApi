@@ -1,6 +1,10 @@
 
 import React from 'react'
 import { forecastType } from '../types'
+import { getHumidityValue, getPop, getSunTime, getVisibilityValue, getWindDirection } from '../helpers';
+import Sunrise from './Icons/Sunrise';
+import Sunset from './Icons/Sunset';
+import Tile from './Tile';
 
 //props type
 interface props {
@@ -19,7 +23,7 @@ const Forecast: React.FC<props> = ({ data }): JSX.Element => {
   console.log(today);
 
   return (
-    <div className="w-full md:max-w-[500px] py-4 md:py-4 md:px-10 lg:px-24 h-full lg:h-auto bg-white bg-opacity-20 backdrop-blur-ls rounded drop-shadow-lg">
+    <div className="w-full max-w-[500px] py-4 md:py-4 md:px-10 lg:px-24 h-full lg:h-auto bg-white bg-opacity-20 backdrop-blur-ls rounded drop-shadow-lg p-6">
 
       {/* forecast header */}
       <section className="text-center" >
@@ -59,8 +63,8 @@ const Forecast: React.FC<props> = ({ data }): JSX.Element => {
             className="inline-block text-center w-[50px] flex-shrink-0"
           >
             <p className="text-sm">
-              {i === 0 ? 'Now' : new Date(item.dt * 1000).getHours()}
-              {/* en el cero,tiene la info de justo ahorita. Horas como siempre por 1000 */}
+              {i === 0 ? 'Now' : getSunTime(item.dt)}
+              {/* en el cero,tiene la info de justo ahorita. Horas como siempre timestamp por 1000 */}
             </p>
             <img
               alt={`weather-icon-${item.weather[0].description}`}
@@ -71,6 +75,65 @@ const Forecast: React.FC<props> = ({ data }): JSX.Element => {
             </p>
           </div>
         ))}
+      </section>
+
+
+      <section className="flex flex-wrap justify-around text-zinc-700 gap-2 ">
+
+        {/* hora sunrise/amacener */}
+        <div className="w-[140px] text-xs font-bold flex flex-col items-center bg-white/20 backdrop-blur-ls rounded drop-shadow-lg py-4 mb-5">
+          <Sunrise /> <span className="mt-2">{getSunTime(data.sunrise)}</span>
+        </div>
+
+        {/* hora sunset/atardecer*/}
+        <div className="w-[140px] text-xs font-bold flex flex-col items-center bg-white/20 backdrop-blur-ls rounded drop-shadow-lg py-4 mb-5">
+          <Sunset /> <span className="mt-2">{getSunTime(data.sunset)}</span>
+        </div>
+
+        {/* tiles components para cada cosita de la info general del clima de justo aorita */}
+        <Tile
+          icon="wind"
+          title="Wind"
+          info={`${Math.round(today.wind.speed)} km/h`}
+          description={`${getWindDirection(
+            Math.round(today.wind.deg)
+          )}, gusts 
+            ${today.wind.gust.toFixed(1)} km/h`}
+        />
+        <Tile
+          icon="feels"
+          title="Feels like"
+          info={<Degree temp={Math.round(today.main.feels_like)} />}
+          description={`Feels ${Math.round(today.main.feels_like) < Math.round(today.main.temp)
+            ? 'colder'
+            : 'warmer'
+            }`}
+        />
+        <Tile
+          icon="humidity"
+          title="Humidity"
+          info={`${today.main.humidity} %`}
+          description={getHumidityValue(today.main.humidity)}
+        />
+        <Tile
+          icon="pop"
+          title="Precipitation"
+          info={`${Math.round(today.pop * 100)}%`}
+          description={`${getPop(today.pop)}, clouds at ${today.clouds.all}%`}
+        />
+        <Tile
+          icon="pressure"
+          title="Pressure"
+          info={`${today.main.pressure} hPa`}
+          description={` ${Math.round(today.main.pressure) < 1013 ? 'Lower' : 'Higher'
+            } than standard`}
+        />
+        <Tile
+          icon="visibility"
+          title="Visibility"
+          info={`${(today.visibility / 1000).toFixed()} km`}
+          description={getVisibilityValue(today.visibility)}
+        />
       </section>
     </div>
   )
